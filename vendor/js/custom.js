@@ -5,6 +5,7 @@
     let txtInput = document.getElementById('txtColor');
     let showBGInput = document.getElementById('showBG');
     let saveButton = document.getElementById('saveButton');
+    let resetButton = document.getElementById('resetColors');
     let demo = document.getElementById("demo");
 
     chrome.storage.sync.get(['backgroundColor','textColor','showBackgrounds'], function (result) {
@@ -13,7 +14,7 @@
     	showBG = result.showBackgrounds;
 
     	if(bgColor == null) bgColor = "#1c1c1c";
-    	if(txtColor == null) txtColor = "#fff";
+    	if(txtColor == null) txtColor = "#ffffff";
     	if(showBG == null) showBG = true;
 
     	bgInput.value = bgColor;
@@ -36,6 +37,15 @@
         chrome.storage.sync.set({'showBackgrounds': showBGInput.checked});
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             chrome.tabs.update(tabs[0].id, {url: tabs[0].url});
+        });
+    }
+
+    resetButton.onclick = function () {
+        chrome.storage.sync.set({ 'backgroundColor': "#1c1c1c" });
+        chrome.storage.sync.set({ 'textColor': "#ffffff" });
+        chrome.storage.sync.set({ 'showBackgrounds': true });
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
         });
     }
 
