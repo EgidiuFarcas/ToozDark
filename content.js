@@ -1,3 +1,22 @@
+let bgColor, txtColor, showBG, en;
+
+chrome.storage.sync.get(['backgroundColor', 'textColor', 'showBackgrounds', 'enableDark'], function (result) {
+	bgColor = result.backgroundColor;
+	txtColor = result.textColor;
+	showBG = result.showBackgrounds;
+	en = result.enableDark;
+
+	if (bgColor == null) bgColor = "#1c1c1c";
+	if (txtColor == null) txtColor = "#fff";
+	if (showBG == null) showBG = true;
+	if (en == null) en = true;
+	if (en == false) return;
+
+	darken(bgColor, txtColor, showBG);
+
+});
+
+
 // Select the node that will be observed for mutations
 const targetNode = document.getElementsByTagName("BODY")[0];
 
@@ -6,7 +25,8 @@ const config = { attributes: true, childList: true, subtree: true };
 
 // Callback function to execute when mutations are observed
 const callback = function(mutationsList, observer) {
-    // Use traditional 'for loops' for IE 11
+	// Use traditional 'for loops' for IE 11
+	if (en == false) return;
     darken(bgColor, txtColor, showBG);
 };
 
@@ -15,21 +35,6 @@ const observer = new MutationObserver(callback);
 
 // Start observing the target node for configured mutations
 observer.observe(targetNode, config);
-
-let bgColor, txtColor, showBG;
-
-chrome.storage.sync.get(['backgroundColor','textColor','showBackgrounds'], function (result) {
-	bgColor = result.backgroundColor;
-	txtColor = result.textColor;
-	showBG = result.showBackgrounds;
-
-	if(bgColor == null) bgColor = "#1c1c1c";
-	if(txtColor == null) txtColor = "#fff";
-	if(showBG == null) showBG = true;
-
-	darken(bgColor, txtColor, showBG);
-
-});
 
 
 function darken(background, text, showBackgrounds){
