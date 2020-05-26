@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "ToozDark",
-    "version": "1.2",
+    "version": "1.3",
     "description": "Theme Customizer for the Youtooz website!",
     "icons": { "128": "logo.png" },
     "permissions": [
