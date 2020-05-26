@@ -1,16 +1,18 @@
 let bgColor, txtColor, showBG, en;
 
-chrome.storage.sync.get(['backgroundColor', 'textColor', 'showBackgrounds', 'enableDark'], function (result) {
+chrome.storage.sync.get(['backgroundColor', 'textColor', 'showBackgrounds', 'enableDark', 'stripContent'], function (result) {
 	bgColor = result.backgroundColor;
 	txtColor = result.textColor;
 	showBG = result.showBackgrounds;
 	en = result.enableDark;
+	strip = result.stripContent;
 
+	if (en == false) return;
 	if (bgColor == null) bgColor = "#1c1c1c";
 	if (txtColor == null) txtColor = "#fff";
 	if (showBG == null) showBG = true;
 	if (en == null) en = true;
-	if (en == false) return;
+	if(strip == true) stripExtraContent();
 
 	darken(bgColor, txtColor, showBG);
 
@@ -78,6 +80,14 @@ function darken(background, text, showBackgrounds){
 	DarkenByClass('ModalWrapper_box_close', null, text);
 	DarkenByClass('Article_description', null, text);
 	DarkenByClass('Product-price_current', null, text);
+	DarkenByTag('blockquote', null, text);
+	DarkenByTag('ul', null, text);
+
+	//CHeckout Page
+	DarkenByTag('body', background, text);
+	DarkenByClass('section__title', null, text);
+	DarkenByClass('breadcrumb__text', null, text);
+	DarkenByClass('dynamic-checkout__title', null, text);
 }
 
 
@@ -90,6 +100,22 @@ function DarkenById(id, background = null, text = null){
 
 function DarkenByClass(id, background = null, text = null, skipFirst = false){
 	let elements = document.getElementsByClassName(id);
+	if(!elements) return;
+	Array.from(elements).forEach((element, i) => {
+		if(i == 0){
+			if(!skipFirst){
+				if(background != null) element.style.background = background;
+				if(text != null) element.style.color = text;
+			}
+		}else{
+			if(background != null) element.style.background = background;
+			if(text != null) element.style.color = text;
+		}
+	});
+}
+
+function DarkenByTag(tag, background = null, text = null, skipFirst = false){
+	let elements = document.getElementsByTagName(tag);
 	if(!elements) return;
 	Array.from(elements).forEach((element, i) => {
 		if(i == 0){
@@ -132,4 +158,21 @@ function DarkenByClassWebkit(id, background = null, text = null, skipFirst = fal
 			if(text != null) element.style.webkitTextFillColor = text;
 		}
 	});
+}
+
+function stripExtraContent(){
+	removeByClass('Layout_header');
+	removeByClass('Layout_footer');
+	removeById('collection-past-drops');
+	removeById('shopify-section-social-cards-homepage');
+}
+
+function removeByClass(elem_class){
+	var elem = document.querySelector('.'+elem_class);
+	elem.parentNode.removeChild(elem);
+}
+
+function removeById(elem_id){
+	var elem = document.querySelector('#'+elem_id);
+	elem.parentNode.removeChild(elem);
 }
